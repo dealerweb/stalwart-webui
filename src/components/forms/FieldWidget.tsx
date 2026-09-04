@@ -8,7 +8,6 @@ import { useState, useEffect, useMemo, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBufferedValue, useResetOnChange } from '@/hooks/useBufferedValue';
 import ReactMarkdown from 'react-markdown';
-
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -21,14 +20,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Calendar } from '@/components/ui/calendar';
-
 import { Plus, X, Eye, EyeOff, Loader2, Search, Check, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
-
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
 import { ExpressionEditor } from '@/components/expression/ExpressionEditor';
 import { OtpAuthField } from '@/components/forms/OtpAuthField';
-
 import {
   bytesToHuman,
   humanToBytes,
@@ -39,7 +34,13 @@ import {
   SIZE_UNITS,
   DURATION_UNITS,
 } from '@/lib/durationFormat';
-import { resolveSchema, resolveVariantForm, resolveObject, buildEmbeddedDefaults } from '@/lib/schemaResolver';
+import {
+  resolveSchema,
+  resolveVariantForm,
+  resolveObject,
+  buildEmbeddedDefaults,
+  buildNewObjectValue,
+} from '@/lib/schemaResolver';
 import { cn } from '@/lib/utils';
 import { useAccountStore } from '@/stores/accountStore';
 import { useEffectiveEdition } from '@/components/forms/FormEditionContext';
@@ -1539,16 +1540,7 @@ function ObjectListField({
 
   const addItem = () => {
     const nextIndex = entries.length > 0 ? Math.max(...entries.map(([k]) => parseInt(k))) + 1 : 0;
-    let defaults: Record<string, unknown> = {};
-    if (resolvedSchema.type === 'single' && resolvedSchema.fields.defaults) {
-      defaults = { ...resolvedSchema.fields.defaults };
-    } else if (resolvedSchema.type === 'multiple' && resolvedSchema.variants[0]) {
-      defaults = { '@type': resolvedSchema.variants[0].name };
-      if (resolvedSchema.variants[0].fields?.defaults) {
-        defaults = { ...defaults, ...resolvedSchema.variants[0].fields.defaults };
-      }
-    }
-    onChange({ ...mapValue, [String(nextIndex)]: defaults });
+    onChange({ ...mapValue, [String(nextIndex)]: buildNewObjectValue(schema, objectName) });
   };
 
   const removeItem = (key: string) => {
@@ -1790,10 +1782,10 @@ function EnumMultiSelect({ enumName, items, onChange, readOnly, schema, minItems
   if (variants.length > 10) {
     const filtered = searchQuery
       ? variants.filter(
-          (v) =>
-            v.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            v.name.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
+        (v) =>
+          v.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          v.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
       : variants;
 
     return (
@@ -2021,7 +2013,7 @@ function MapField({ keyClass, valueClass, value, onChange, readOnly, schema, min
     if (valueClass.type === 'number') {
       defaultValue = 0;
     } else if (valueClass.type === 'object') {
-      defaultValue = {};
+      defaultValue = buildNewObjectValue(schema, valueClass.objectName);
     }
 
     onChange({ ...mapValue, [key]: defaultValue });
