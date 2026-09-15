@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.11] - 2026-09-15
+
+### Added
+- Sievepad integration.
+
+### Changed
+
+### Fixed
+
 ## [1.0.10] - 2026-09-04
 
 ### Added

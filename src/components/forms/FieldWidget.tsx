@@ -24,6 +24,7 @@ import { Plus, X, Eye, EyeOff, Loader2, Search, Check, ChevronRight, Calendar as
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ExpressionEditor } from '@/components/expression/ExpressionEditor';
 import { OtpAuthField } from '@/components/forms/OtpAuthField';
+import { SievepadButton } from '@/components/forms/SievepadButton';
 import {
   bytesToHuman,
   humanToBytes,
@@ -59,6 +60,7 @@ export interface FieldWidgetProps {
   readOnly: boolean;
   error?: string;
   schema: Schema;
+  sieveScriptName?: string;
 }
 
 function getRequiredMarker(field: Field, readOnly: boolean): 'required' | 'optional' | null {
@@ -79,7 +81,7 @@ function getRequiredMarker(field: Field, readOnly: boolean): 'required' | 'optio
 
 export function FieldWidget(props: FieldWidgetProps) {
   const { t } = useTranslation();
-  const { field, formField, value, onChange, readOnly, error, schema } = props;
+  const { field, formField, value, onChange, readOnly, error, schema, sieveScriptName } = props;
   const ft = field.type;
   const edition = useEffectiveEdition();
 
@@ -132,7 +134,7 @@ export function FieldWidget(props: FieldWidgetProps) {
           />
         );
       case 'blobId':
-        return <BlobField value={value} onChange={onChange} readOnly={readOnly} />;
+        return <BlobField value={value} onChange={onChange} readOnly={readOnly} sieveScriptName={sieveScriptName} />;
       case 'objectId':
         return (
           <ObjectIdField
@@ -236,6 +238,9 @@ export function FieldWidget(props: FieldWidgetProps) {
         </div>
       )}
       {widget}
+      {sieveScriptName !== undefined && ft.type === 'string' && (
+        <SievepadButton scriptName={sieveScriptName} source={typeof value === 'string' ? value : ''} />
+      )}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
@@ -986,9 +991,10 @@ interface BlobFieldProps {
   value: unknown;
   onChange: (value: unknown) => void;
   readOnly: boolean;
+  sieveScriptName?: string;
 }
 
-function BlobField({ value, onChange, readOnly }: BlobFieldProps) {
+function BlobField({ value, onChange, readOnly, sieveScriptName }: BlobFieldProps) {
   const { t } = useTranslation();
   const blobId = typeof value === 'string' ? value : null;
   const [content, setContent] = useState<string>('');
@@ -1054,6 +1060,7 @@ function BlobField({ value, onChange, readOnly }: BlobFieldProps) {
         rows={8}
         className="font-mono text-xs"
       />
+      {sieveScriptName !== undefined && <SievepadButton scriptName={sieveScriptName} source={content} />}
       {modified && (
         <p className="text-xs text-muted-foreground">
           {t('field.contentModified', 'Content modified (will be saved as a new blob)')}
@@ -1782,10 +1789,10 @@ function EnumMultiSelect({ enumName, items, onChange, readOnly, schema, minItems
   if (variants.length > 10) {
     const filtered = searchQuery
       ? variants.filter(
-        (v) =>
-          v.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          v.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          (v) =>
+            v.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            v.name.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
       : variants;
 
     return (
