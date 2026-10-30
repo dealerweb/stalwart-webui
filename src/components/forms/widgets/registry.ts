@@ -8,9 +8,12 @@ import type { FieldType } from '@/types/schema';
 
 export type LabelMode = 'control' | 'group' | 'none';
 
+type RowLayout = 'side' | 'block' | 'inline';
+
 export interface WidgetTraits {
   labelMode: LabelMode;
   readOnlyAsValue: boolean;
+  layout: RowLayout;
 }
 
 export type WidgetKey =
@@ -81,27 +84,27 @@ export function widgetKey(type: FieldType): WidgetKey {
 }
 
 const TRAITS: Record<WidgetKey, WidgetTraits> = {
-  string: { labelMode: 'control', readOnlyAsValue: true },
-  'string:secret': { labelMode: 'control', readOnlyAsValue: true },
-  'string:multiline': { labelMode: 'control', readOnlyAsValue: true },
-  'string:color': { labelMode: 'control', readOnlyAsValue: true },
-  number: { labelMode: 'control', readOnlyAsValue: true },
-  'number:size': { labelMode: 'control', readOnlyAsValue: true },
-  'number:duration': { labelMode: 'control', readOnlyAsValue: true },
-  utcDateTime: { labelMode: 'control', readOnlyAsValue: true },
-  boolean: { labelMode: 'control', readOnlyAsValue: true },
-  enum: { labelMode: 'control', readOnlyAsValue: true },
-  blobId: { labelMode: 'control', readOnlyAsValue: false },
-  objectId: { labelMode: 'control', readOnlyAsValue: true },
-  object: { labelMode: 'group', readOnlyAsValue: false },
-  'object:x:Expression': { labelMode: 'group', readOnlyAsValue: false },
-  'object:x:Rate': { labelMode: 'control', readOnlyAsValue: false },
-  'object:x:OtpAuth': { labelMode: 'none', readOnlyAsValue: false },
-  objectList: { labelMode: 'group', readOnlyAsValue: false },
-  set: { labelMode: 'control', readOnlyAsValue: true },
-  'set:enum': { labelMode: 'group', readOnlyAsValue: true },
-  map: { labelMode: 'group', readOnlyAsValue: false },
-  unsupported: { labelMode: 'none', readOnlyAsValue: false },
+  string: { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  'string:secret': { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  'string:multiline': { labelMode: 'control', readOnlyAsValue: true, layout: 'block' },
+  'string:color': { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  number: { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  'number:size': { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  'number:duration': { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  utcDateTime: { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  boolean: { labelMode: 'control', readOnlyAsValue: true, layout: 'inline' },
+  enum: { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  blobId: { labelMode: 'control', readOnlyAsValue: false, layout: 'block' },
+  objectId: { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  object: { labelMode: 'group', readOnlyAsValue: false, layout: 'block' },
+  'object:x:Expression': { labelMode: 'group', readOnlyAsValue: false, layout: 'block' },
+  'object:x:Rate': { labelMode: 'control', readOnlyAsValue: false, layout: 'side' },
+  'object:x:OtpAuth': { labelMode: 'none', readOnlyAsValue: false, layout: 'block' },
+  objectList: { labelMode: 'group', readOnlyAsValue: false, layout: 'block' },
+  set: { labelMode: 'control', readOnlyAsValue: true, layout: 'side' },
+  'set:enum': { labelMode: 'group', readOnlyAsValue: true, layout: 'side' },
+  map: { labelMode: 'group', readOnlyAsValue: false, layout: 'block' },
+  unsupported: { labelMode: 'none', readOnlyAsValue: false, layout: 'block' },
 };
 
 export function widgetTraits(type: FieldType): WidgetTraits {

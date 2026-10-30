@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.4] - Unreleased
+
+### Added
+- New WebUI design with more pizzazz:
+    - Cleaner generated forms: two-column fields that stack on mobile, simpler nested objects, collapsible list items, segmented variant pickers, a section index on wide screens and a floating save bar.
+    - Dashboards support a layout with stat, chart, headline and ranking tiles, plus column and row spans, tones and delta polarity, all defined in the schema.
+- Custom OAuth scopes can be requested through the `oauth-scopes` meta tag; they are added to the scopes required by the server.
+
+### Changed
+
+### Fixed
+
 ## [2.0.3] - 2026-10-29
 
 ### Added

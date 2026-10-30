@@ -24,17 +24,25 @@ export interface DiscoveryResponse {
   protected_resources?: string[];
 }
 
+export function getMetaScopes(): string[] {
+  const content = document.querySelector('meta[name="oauth-scopes"]')?.getAttribute('content') ?? '';
+  return content.split(/\s+/).filter((scope) => scope.length > 0);
+}
+
 export function selectScopes(
   discovery: Pick<DiscoveryResponse, 'scopes_supported' | 'stalwart_required_scopes'>,
   override: string | undefined = SCOPES_OVERRIDE,
+  extra: string[] = getMetaScopes(),
 ): string {
   const trimmed = override?.trim();
   if (trimmed) return trimmed;
   const required = discovery.stalwart_required_scopes;
-  if (Array.isArray(required)) {
-    return required.filter((scope) => typeof scope === 'string' && scope.length > 0).join(' ');
-  }
-  return discovery.scopes_supported?.includes('openid') ? 'openid' : '';
+  const scopes = Array.isArray(required)
+    ? required.filter((scope) => typeof scope === 'string' && scope.length > 0)
+    : discovery.scopes_supported?.includes('openid')
+      ? ['openid']
+      : [];
+  return [...new Set([...scopes, ...extra])].join(' ');
 }
 
 export function selectResource(
